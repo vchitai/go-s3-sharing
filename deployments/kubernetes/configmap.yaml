@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-s3-sharing-config
+  namespace: go-s3-sharing
+data:
+  PORT: "8080"
+  MAX_AGE_DAYS: "90"
+  AWS_REGION: "us-east-1"
+  REDIS_DB: "0"

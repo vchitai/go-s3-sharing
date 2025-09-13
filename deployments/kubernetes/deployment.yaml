@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-s3-sharing
+  namespace: go-s3-sharing
+  labels:
+    app: go-s3-sharing
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: go-s3-sharing
+  template:
+    metadata:
+      labels:
+        app: go-s3-sharing
+    spec:
+      containers:
+        - name: go-s3-sharing
+          image: go-s3-sharing:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: go-s3-sharing-secret
+                  key: S3_BUCKET
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: go-s3-sharing-secret
+                  key: REDIS_PASSWORD
+            - name: REDIS_ADDR
+              value: "redis-service:6379"
+          envFrom:
+            - configMapRef:
+                name: go-s3-sharing-config
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL

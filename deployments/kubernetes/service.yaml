@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-s3-sharing-service
+  namespace: go-s3-sharing
+  labels:
+    app: go-s3-sharing
+spec:
+  selector:
+    app: go-s3-sharing
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  type: ClusterIP
