@@ -70,7 +70,7 @@ func main() {
 
 	shareConfig := &service.ShareConfig{
 		MaxAgeDays: cfg.Security.MaxAgeDays,
-		BaseURL:    "https://your-domain.com", // This should come from config
+		BaseURL:    cfg.BaseURL, // This should come from config
 	}
 
 	shareService := service.NewShareService(storageService, cacheService, shareConfig)

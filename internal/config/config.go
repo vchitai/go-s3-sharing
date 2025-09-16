@@ -13,6 +13,7 @@ type Config struct {
 	AWS      AWSConfig
 	Redis    RedisConfig
 	Security SecurityConfig
+	BaseURL  string
 }
 
 // ServerConfig holds HTTP server configuration
@@ -64,6 +65,7 @@ func Load() (*Config, error) {
 		Security: SecurityConfig{
 			MaxAgeDays: getIntEnv("MAX_AGE_DAYS", 90),
 		},
+		BaseURL: getEnv("BASE_URL", "http://localhost:8080"),
 	}
 
 	// Validate required fields
