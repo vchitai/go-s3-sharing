@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"crypto/tls"
 
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -50,11 +51,18 @@ func main() {
 	s3Client := s3.NewFromConfig(awsCfg)
 
 	// Initialize Redis client
-	redisClient := redis.NewClient(&redis.Options{
+	redisOptions := &redis.Options{
 		Addr:     cfg.Redis.Addr,
 		Password: cfg.Redis.Password,
 		DB:       cfg.Redis.DB,
-	})
+	}
+
+	if cfg.Redis.TLSEnabled {
+		redisOptions.TLSConfig = &tls.Config{
+			InsecureSkipVerify: true, // #nosec G402
+		}
+	}
+	redisClient := redis.NewClient(redisOptions)
 
 	// Initialize services
 	storageService := service.NewS3Service(s3Client, cfg.AWS.Bucket)

@@ -31,9 +31,10 @@ type AWSConfig struct {
 
 // RedisConfig holds Redis configuration
 type RedisConfig struct {
-	Addr     string
-	Password string
-	DB       int
+	Addr       string
+	Password   string
+	DB         int
+	TLSEnabled bool
 }
 
 // SecurityConfig holds security-related configuration
@@ -55,9 +56,10 @@ func Load() (*Config, error) {
 			Bucket: getEnv("S3_BUCKET", ""),
 		},
 		Redis: RedisConfig{
-			Addr:     getEnv("REDIS_ADDR", "localhost:6379"),
-			Password: getEnv("REDIS_PASSWORD", ""),
-			DB:       getIntEnv("REDIS_DB", 0),
+			Addr:       getEnv("REDIS_ADDR", "localhost:6379"),
+			Password:   getEnv("REDIS_PASSWORD", ""),
+			DB:         getIntEnv("REDIS_DB", 0),
+			TLSEnabled: getBoolEnv("REDIS_TLS_ENABLED", false),
 		},
 		Security: SecurityConfig{
 			MaxAgeDays: getIntEnv("MAX_AGE_DAYS", 90),
@@ -75,6 +77,13 @@ func Load() (*Config, error) {
 func getEnv(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
+	}
+	return defaultValue
+}
+
+func getBoolEnv(key string, defaultValue bool) bool {
+	if value := os.Getenv(key); value != "" {
+		return value == "true"
 	}
 	return defaultValue
 }
