@@ -21,10 +21,12 @@ func NewServer(cfg *config.Config, shareService *service.ShareService, logger *s
 	handler := NewHandler(shareService, logger)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler.HandleImage)
+	// Register specific routes first (most specific to least specific)
 	mux.HandleFunc("/api/shares", handler.HandleCreateShare)
 	mux.HandleFunc("/health", handler.HandleHealth)
 	mux.HandleFunc("/ready", handler.HandleReady)
+	// Register the catch-all image handler last
+	mux.HandleFunc("/", handler.HandleImage)
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Server.Port,

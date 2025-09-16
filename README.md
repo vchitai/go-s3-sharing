@@ -122,6 +122,8 @@ Retrieves a shared file from S3.
 - `403 Forbidden`: Link has expired
 - `404 Not Found`: S3 object not found
 
+**Note:** This endpoint uses a catch-all pattern and should be registered last in the router to avoid conflicts with other endpoints.
+
 #### `POST /api/shares`
 
 Creates a new shareable link.
@@ -209,6 +211,9 @@ go test -tags=integration ./...
 # Coverage report
 go test -coverprofile=coverage.out ./...
 go tool cover -html=coverage.out
+
+# Test routing fix specifically
+go run ./examples/routing-test
 ```
 
 ## 📊 Monitoring

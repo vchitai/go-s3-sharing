@@ -31,12 +31,20 @@ func NewHandler(shareService *service.ShareService, logger *slog.Logger) *Handle
 func (h *Handler) HandleImage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	// Skip API routes and health checks - these should be handled by specific handlers
+	if strings.HasPrefix(r.URL.Path, "/api/") ||
+		r.URL.Path == "/health" ||
+		r.URL.Path == "/ready" {
+		http.NotFound(w, r)
+		return
+	}
+
 	// Parse URL path: /yy/mm/dd/secret/path/to/file.jpg
 	path := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
 
 	if len(parts) < 5 {
-		h.writeError(w, "invalid path structure", http.StatusBadRequest)
+		http.NotFound(w, r)
 		return
 	}
 
